@@ -65,7 +65,7 @@
 ;; for c++, cuda
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-(fa-config-default)
+; (fa-config-default)
 (add-hook 'c-mode-common-hook
           (lambda ()
             (if (derived-mode-p 'c-mode 'c++-mode)
@@ -83,3 +83,11 @@
 
 ;; syntax check
 (global-flycheck-mode)
+
+;; highlight current light
+(global-hl-line-mode +1)
+
+
+;; for shell color
+ (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
