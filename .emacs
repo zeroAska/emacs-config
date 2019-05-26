@@ -20,7 +20,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
+    (elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -56,6 +56,8 @@
 
 
 (setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 2)
+;;(setq default-tab-width 4)
 
 (column-number-mode 1)
 
@@ -65,7 +67,7 @@
 ;; for c++, cuda
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-(fa-config-default)
+; (fa-config-default)
 (add-hook 'c-mode-common-hook
           (lambda ()
             (if (derived-mode-p 'c-mode 'c++-mode)
@@ -82,4 +84,12 @@
 (setq slime-contribs '(slime-fancy))
 
 ;; syntax check
-(global-flycheck-mode)
+;; (global-flycheck-mode)
+
+;; highlight current light
+(global-hl-line-mode +1)
+
+
+;; for shell color
+ (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
