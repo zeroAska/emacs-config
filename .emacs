@@ -20,7 +20,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
+    (auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -56,6 +56,8 @@
 
 
 (setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 2)
+;;(setq default-tab-width 4)
 
 (column-number-mode 1)
 
@@ -82,7 +84,7 @@
 (setq slime-contribs '(slime-fancy))
 
 ;; syntax check
-(global-flycheck-mode)
+;; (global-flycheck-mode)
 
 ;; highlight current light
 (global-hl-line-mode +1)
@@ -91,3 +93,20 @@
 ;; for shell color
  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+
+
+;; for yaml
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+
+;; highlight symbol
+(add-hook 'after-init-hook 'global-auto-highlight-symbol-mode)
+
+;; enable search at current symbol
+(global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
+
+
+;; sticky function mode
+(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+(semantic-mode 1)
+(require 'stickyfunc-enhance)
