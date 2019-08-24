@@ -20,8 +20,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
-
+    (counsel-gtags cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -57,15 +56,21 @@
 
 
 (setq-default indent-tabs-mode nil)
+(c-set-offset 'substatement-open 0)
 (setq-default c-basic-offset 2)
+;(setq c-default-style "K&R"
+;      c-basic-offset 2)
+
+
 ;;(setq default-tab-width 4)
 
 (column-number-mode 1)
 
 ;; auto complete
-(global-auto-complete-mode t)
+;(global-auto-complete-mode t)
 
 ;; for c++, cuda
+(require 'cc-mode)
 (add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 ; (fa-config-default)
@@ -75,7 +80,34 @@
                 (cppcm-reload-all)
               )))
 (add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(defun my-irony-mode-hook ()
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async))
+(add-hook 'irony-mode-hook 'my-irony-mode-hook)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+
 ;;(eval-after-load 'company
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+(add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+(require 'company-c-headers)
+(require 'company-irony-c-headers)
+(eval-after-load 'company
+  '(add-to-list
+    'company-backends '(company-irony-c-headers company-irony)))
+(setq company-idle-delay 0)
+(setq company-backends (delete 'company-semantic company-backends))
+(define-key c-mode-map [(tab)] 'company-complete)
+(define-key c++-mode-map [(tab)] 'company-complete)
+(add-hook 'c++-mode-hook 'flycheck-mode)
+(add-hook 'c-mode-hook 'flycheck-mode)
+;(add-to-list 'company-irony-c-headers-path-system "/usr/include/c++/5/")
+
+
 ;;  '(add-to-list 'company-backends 'company-irony))
 
 
@@ -107,7 +139,40 @@
 (global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
 
 
-;; sticky function mode
+;; sticky function mode -> show which function you are in currently
 (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
 (semantic-mode 1)
 (require 'stickyfunc-enhance)
+(which-function-mode 1)
+
+
+;; auto complete templates
+(require 'yasnippet)
+(yas-global-mode 1)
+
+
+
+;; Package: smartparens
+;; when you press RET, the curly braces automatically
+;; add another newline
+(require 'smartparens-config)
+(show-smartparens-global-mode +1)
+(smartparens-global-mode 1)
+(sp-with-modes '(c-mode c++-mode)
+  (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
+  (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
+                                            ("* ||\n[i]" "RET"))))
+
+;; guess indent from files
+(require 'dtrt-indent)
+(dtrt-indent-mode 1)
+(setq dtrt-indent-verbosity 0)
+
+
+
+
+;; semantic completion
+(require 'semantic)
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1)
+(semantic-mode 1)
