@@ -13,7 +13,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags  cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers ))
+(dolist (package '(ivy counsel-gtags  cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode ))
  (unless (package-installed-p package)
    (package-install package)))
 
