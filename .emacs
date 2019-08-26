@@ -54,7 +54,7 @@
 
 ;; for auto complete
 ;(ac-config-default)
-;(global-auto-complete-mode t)
+(global-auto-complete-mode t)
 (electric-pair-mode 1)
 
 ;; for ctags
@@ -112,8 +112,8 @@
     'company-backends '(company-irony-c-headers company-irony)))
 (setq company-idle-delay 0)
 (setq company-backends (delete 'company-semantic company-backends))
-(define-key c-mode-map [(tab)] 'company-complete)
-(define-key c++-mode-map [(tab)] 'company-complete)
+;;(define-key c-mode-map [(tab)] 'company-complete)
+;;(define-key c++-mode-map [(tab)] 'company-complete)
 (add-hook 'c++-mode-hook 'flycheck-mode)
 (add-hook 'c-mode-hook 'flycheck-mode)
 ;(add-to-list 'company-irony-c-headers-path-system "/usr/include/c++/5/")
