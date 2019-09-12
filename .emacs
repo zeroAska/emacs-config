@@ -13,7 +13,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags  cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode ))
+(dolist (package '(ivy counsel-gtags  cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything))
  (unless (package-installed-p package)
    (package-install package)))
 
@@ -31,7 +31,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (counsel-gtags cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
+    (rustic flycheck-rust cargo company counsel-gtags cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -110,7 +110,7 @@
 (eval-after-load 'company
   '(add-to-list
     'company-backends '(company-irony-c-headers company-irony)))
-(setq company-idle-delay 0)
+(setq company-idle-delay 1)
 (setq company-backends (delete 'company-semantic company-backends))
 ;;(define-key c-mode-map [(tab)] 'company-complete)
 ;;(define-key c++-mode-map [(tab)] 'company-complete)
@@ -151,8 +151,8 @@
 
 
 ;; sticky function mode -> show which function you are in currently
-(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
 (semantic-mode 1)
+(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
 (require 'stickyfunc-enhance)
 (which-function-mode 1)
 
@@ -187,3 +187,4 @@
 (global-semanticdb-minor-mode 1)
 (global-semantic-idle-scheduler-mode 1)
 (semantic-mode 1)
+(semantic :disabled-for emacs-lisp)
