@@ -3,7 +3,7 @@
   (add-to-list
    'package-archives
    ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
-   '("melpa" . "http://melpa.milkbox.net/packages/")
+   '("melpa" . "http://melpa.org/packages/")
    t))
 
 (package-initialize)
@@ -13,7 +13,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags  cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything))
+(dolist (package '(ivy counsel-gtags semantic cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode))
  (unless (package-installed-p package)
    (package-install package)))
 
@@ -24,14 +24,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (monokai)))
+ '(custom-enabled-themes '(monokai))
  '(custom-safe-themes
-   (quote
-    ("bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" default)))
+   '("a2cde79e4cc8dc9a03e7d9a42fabf8928720d420034b66aecc5b665bbf05d4e9" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" default))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   (quote
-    (rustic flycheck-rust cargo company counsel-gtags cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers))))
+   '(paren-face paredit scheme-complete docker julia-shell julia-mode julia-repl flycheck-julia haskell-mode ta ssh cdb rustic flycheck-rust cargo company counsel-gtags cpp-capf flylisp flycheck-inline flycheck-irony compact-docstrings company-shell company-lsp dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -54,11 +52,11 @@
 
 ;; for auto complete
 ;(ac-config-default)
-(global-auto-complete-mode t)
+;(global-auto-complete-mode t)
 (electric-pair-mode 1)
 
 ;; for ctags
-(setq path-to-ctags "/usr/bin/ctags-exuberant") 
+(setq path-to-ctags "/usr/bin/ctags") 
 (defun create-tags (dir-name)
     "Create tags file."
     (interactive "DDirectory: ")
@@ -78,19 +76,26 @@
 (column-number-mode 1)
 
 ;; auto complete
-;(global-auto-complete-mode t)
+(global-auto-complete-mode t)
 
 ;; for c++, cuda
 (require 'cc-mode)
-(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+;(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 ; (fa-config-default)
+;(add-hook 'c-mode-common-hook
+;          (lambda ()
+;            (if (derived-mode-p 'c-mode 'c++-mode)
+;                (cppcm-reload-all)
+;              )))
+(add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'c-mode-common-hook
           (lambda ()
             (if (derived-mode-p 'c-mode 'c++-mode)
-                (cppcm-reload-all)
+                (if  (not (or (string-match "^/usr/local/include/.*" buffer-file-name)
+                              (string-match "^/usr/src/linux/include/.*" buffer-file-name)))
+                    (cppcm-reload-all))
               )))
-(add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'c-mode-hook 'irony-mode)
 (defun my-irony-mode-hook ()
   (define-key irony-mode-map [remap completion-at-point]
@@ -110,12 +115,20 @@
 (eval-after-load 'company
   '(add-to-list
     'company-backends '(company-irony-c-headers company-irony)))
-(setq company-idle-delay 1)
+(setq company-idle-delay nil)
+(setq company-minimum-prefix-length 1)
+; Use tab key to cycle through suggestions.
+; ('tng' means 'tab and go')
+(company-tng-configure-default)
+;; weight by frequency
+(setq company-transformers '(company-sort-by-occurrence))
 (setq company-backends (delete 'company-semantic company-backends))
+;(setq company-backends (delete 'company-dabbrev company-backends))
+;(global-set-key "\t" 'company-complete-common)
 ;;(define-key c-mode-map [(tab)] 'company-complete)
-;;(define-key c++-mode-map [(tab)] 'company-complete)
-(add-hook 'c++-mode-hook 'flycheck-mode)
-(add-hook 'c-mode-hook 'flycheck-mode)
+;(define-key c++-mode-map [(tab)] 'company-complete)
+;(add-hook 'c++-mode-hook 'flycheck-mode)
+;(add-hook 'c-mode-hook 'flycheck-mode)
 ;(add-to-list 'company-irony-c-headers-path-system "/usr/include/c++/5/")
 
 
@@ -123,12 +136,12 @@
 
 
 ;; for lisp environment
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
-(setq inferior-lisp-program "/usr/bin/sbcl")
-(setq slime-contribs '(slime-fancy))
+(load (expand-file-name "~/.quicklisp/slime-helper.el"))
+(setq inferior-lisp-program "sbcl")
+;(setq slime-contribs '(slime-fancy))
 
 ;; syntax check
-;; (global-flycheck-mode)
+(global-flycheck-mode)
 
 ;; highlight current light
 (global-hl-line-mode +1)
@@ -151,6 +164,8 @@
 
 
 ;; sticky function mode -> show which function you are in currently
+;(global-semantic-idle-scheduler-mode 1)
+;(semantic-enable)
 (semantic-mode 1)
 (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
 (require 'stickyfunc-enhance)
@@ -160,7 +175,13 @@
 ;; auto complete templates
 (require 'yasnippet)
 (yas-global-mode 1)
-
+(defun yas-no-expand-in-comment/string ()
+  (setq yas-buffer-local-condition
+        '(if (nth 8 (syntax-ppss)) ;; non-nil if in a string or comment
+             '(require-snippet-condition . force-in-comment)
+           t)))
+(add-hook 'c-mode-hook 'yas-no-expand-in-comment/string)
+(add-hook 'c++-mode-hook 'yas-no-expand-in-comment/string)
 
 
 ;; Package: smartparens
@@ -168,11 +189,11 @@
 ;; add another newline
 (require 'smartparens-config)
 (show-smartparens-global-mode +1)
-(smartparens-global-mode 1)
-(sp-with-modes '(c-mode c++-mode)
-  (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
-  (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
-                                            ("* ||\n[i]" "RET"))))
+;;(smartparens-global-mode 1)
+;;(sp-with-modes '(c-mode c++-mode)
+;;  (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
+;;  (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
+;;                                            ("* ||\n[i]" "RET"))))
 
 ;; guess indent from files
 (require 'dtrt-indent)
@@ -183,8 +204,79 @@
 
 
 ;; semantic completion
-(require 'semantic)
-(global-semanticdb-minor-mode 1)
-(global-semantic-idle-scheduler-mode 1)
-(semantic-mode 1)
-(semantic :disabled-for emacs-lisp)
+;(require 'semantic)
+;(global-semanticdb-minor-mode 1)
+;(global-semantic-idle-scheduler-mode 1)
+;(semantic-mode 1)
+;(semantic :disabled-for emacs-lisp)
+
+	;; clear eshell
+;(defun eshell/clear ()
+ ; "Clear the eshell buffer."
+  ;(let ((inhibit-read-only t))
+   ; (erase-buffer)
+    ;    (eshell-send-input)))
+
+;; for cuda 
+(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cuh\\'" . c++-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; for julia
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'julia-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; for scheme
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq scheme-program-name "petite")
+(eval-after-load 'scheme                                                 
+   '(define-key scheme-mode-map "\t" 'scheme-complete-or-indent)) 
+;; bypass the interactive question and start the default interpreter
+(defun scheme-proc ()
+  "Return the current Scheme process, starting one if necessary."
+  (unless (and scheme-buffer
+               (get-buffer scheme-buffer)
+               (comint-check-proc scheme-buffer))
+    (save-window-excursion
+      (run-scheme scheme-program-name)))
+  (or (scheme-get-process)
+      (error "No current process. See variable `scheme-buffer'")))
+
+(defun scheme-split-window ()
+  (cond
+   ((= 1 (count-windows))
+    (delete-other-windows)
+    (split-window-vertically (floor (* 0.68 (window-height))))
+    (other-window 1)
+    (switch-to-buffer "*scheme*")
+    (other-window 1))
+   ((not (find "*scheme*"
+               (mapcar (lambda (w) (buffer-name (window-buffer w)))
+                       (window-list))
+               :test 'equal))
+    (other-window 1)
+    (switch-to-buffer "*scheme*")
+    (other-window -1))))
+
+(defun scheme-send-last-sexp-split-window ()
+  (interactive)
+  (scheme-split-window)
+  (scheme-send-last-sexp))
+
+(defun scheme-send-definition-split-window ()
+  (interactive)
+  (scheme-split-window)
+  (scheme-send-definition))
+
+(add-hook 'scheme-mode-hook
+  (lambda ()
+    (paredit-mode 1)
+    (define-key scheme-mode-map (kbd "<f5>") 'scheme-send-last-sexp-split-window)
+    (define-key scheme-mode-map (kbd "<f6>") 'scheme-send-definition-split-window)))
+
+(require 'paren-face)
+(global-paren-face-mode 1)
+;;(set-face-foreground 'paren-face "DimGray")
+
+
