@@ -78,7 +78,9 @@
 ;; auto complete
 (global-auto-complete-mode t)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; for c++, cuda
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'cc-mode)
 ;(add-to-list 'auto-mode-alist '("\\.cu\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
@@ -104,8 +106,6 @@
     'irony-completion-at-point-async))
 (add-hook 'irony-mode-hook 'my-irony-mode-hook)
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-
-
 ;;(eval-after-load 'company
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
@@ -130,8 +130,8 @@
 ;(add-hook 'c++-mode-hook 'flycheck-mode)
 ;(add-hook 'c-mode-hook 'flycheck-mode)
 ;(add-to-list 'company-irony-c-headers-path-system "/usr/include/c++/5/")
-
-
+(which-function-mode 1)
+(linum-mode 1)
 ;;  '(add-to-list 'company-backends 'company-irony))
 
 
@@ -277,6 +277,7 @@
 
 (require 'paren-face)
 (global-paren-face-mode 1)
+(show-paren-mode 1)
 ;;(set-face-foreground 'paren-face "DimGray")
 
 
