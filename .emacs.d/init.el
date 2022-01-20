@@ -2,9 +2,10 @@
   (require 'package)
   (add-to-list
    'package-archives
-   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
+   ;'("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
    '("melpa" . "http://melpa.org/packages/")
-   t))
+   t)
+  )
 
 (package-initialize)
 
@@ -13,7 +14,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags ))
+(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  ))
  (unless (package-installed-p package)
    (package-install package)))
 
@@ -29,7 +30,7 @@
    '("d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279" "a2cde79e4cc8dc9a03e7d9a42fabf8928720d420034b66aecc5b665bbf05d4e9" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" default))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(counsel-etags company-rtags rtags company-jedi paren-face paredit paren-face scheme-complete docker julia-shell julia-mode julia-repl flycheck-julia haskell-mode ta ssh cdb rustic flycheck-rust cargo company counsel-gtags flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers)))
+   '(lice markdown-preview-mode markdown-mode counsel-etags company-rtags rtags company-jedi paren-face paredit paren-face scheme-complete docker julia-shell julia-mode julia-repl flycheck-julia haskell-mode ta ssh cdb rustic flycheck-rust cargo company counsel-gtags flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -293,3 +294,18 @@
    (format "find %s -name '*.hpp' -o -name '*.h' -o -name '*.cuh' -o -name '*.py' -o -name '*.c' -o -name '*.cpp' -o -name '*.cu' | xargs %s -f TAGS -e -R" (directory-file-name dir-name) path-to-ctags))
   )
 (define-key global-map "\M-*" 'pop-tag-mark)
+
+
+
+;; for custom files to load
+;; for auto header insert
+(add-to-list 'load-path "~/.emacs.d/custom")
+(require 'header2)
+;(autoload 'auto-update-file-header "header2")
+;(add-hook 'write-file-hooks 'auto-update-file-header)
+;(autoload 'auto-make-header "header2")
+;(add-hook 'emacs-lisp-mode-hook 'auto-make-header)
+;(add-hook 'c-mode-common-hook   'auto-make-header)
+;(add-hook 'c++-mode-common-hook   'auto-make-header)
+;(add-hook 'python-mode-common-hook   'auto-make-header)
+
