@@ -32,7 +32,7 @@
  '(inhibit-startup-screen t)
  '(nil nil t)
  '(package-selected-packages
-   '(xterm-color lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode)))
+   '(agtags lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra company avy which-key helm-xref dap-mode)))
 
 
 ;;(setq semantic-c-obey-conditional-section-parsing-flag nil)
@@ -96,7 +96,7 @@
 
 
 (setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs helm-lsp
-    projectile hydra flycheck company avy which-key helm-xref dap-mode))
+    projectile hydra company avy which-key helm-xref dap-mode))
 
 (when (cl-find-if-not #'package-installed-p package-selected-packages)
   (package-refresh-contents)
@@ -119,6 +119,9 @@
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024)
       treemacs-space-between-root-nodes nil
+     ;; lsp-clangd-download-url "https://github.com/clangd/clangd/releases/download/14.0.3/clangd-linux-14.0.3.zip"
+     ;; lsp-clangd-binary-path "~/.emacs.d/.cache/lsp/clangd/clangd_14.0.3/bin/clangd"
+      lsp-clangd-version "14.0.3"
       lsp-idle-delay 0.1)  ;; clangd is fast
 
 (with-eval-after-load 'lsp-mode
@@ -140,7 +143,7 @@
 ;; Force flycheck to always use c++11 support. We use
 ;; the clang language backend so this is set to clang
 ;;(add-hook 'c++-mode-hook
-;;          (lambda () (setq flycheck-clang-language-standard "c++11")))
+;;          (lambda () (setq flycheck-clang-language-standard "c++17")))
 ;;(eval-after-load 'flycheck
 ;;  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 ;;(global-flycheck-mode)
