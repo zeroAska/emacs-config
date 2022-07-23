@@ -136,14 +136,14 @@
  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
 
-(require 'flycheck)
+;;(require 'flycheck)
 ;; Force flycheck to always use c++11 support. We use
 ;; the clang language backend so this is set to clang
-(add-hook 'c++-mode-hook
-          (lambda () (setq flycheck-clang-language-standard "c++11")))
-;(eval-after-load 'flycheck
-;  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-(global-flycheck-mode)
+;;(add-hook 'c++-mode-hook
+;;          (lambda () (setq flycheck-clang-language-standard "c++11")))
+;;(eval-after-load 'flycheck
+;;  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+;;(global-flycheck-mode)
 
 
 ;; for yaml
