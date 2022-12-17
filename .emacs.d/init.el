@@ -18,7 +18,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  helm-gtags modern-cpp-font-lock lsp-mode auctex latex-preview-pane pdf-tools))
+(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  helm-gtags modern-cpp-font-lock lsp-mode auctex latex-preview-pane pdf-tools gscholar-bibtex ))
  (unless (package-installed-p package)
    (package-install package)))
 
@@ -33,9 +33,11 @@
  '(custom-safe-themes
    '("78e6be576f4a526d212d5f9a8798e5706990216e9be10174e3f3b015b8662e27" "d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279" "a2cde79e4cc8dc9a03e7d9a42fabf8928720d420034b66aecc5b665bbf05d4e9" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" default))
  '(helm-completion-style 'helm)
+ '(ignored-local-variable-values
+   '((company-clang-arguments "-I/home/rayzhang/unified_cvo/include/UnifiedCvo/" "-I/usr/include/c++/9/" "-I/usr/include/opencv2/" "-I/usr/include/ceres/" "-I/usr/include/eigen3/" "-I/usr/include/pcl-1.9/")))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '( pdf-tools lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode)))
+   '(dockerfile-mode racket-mode pdf-tools lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode)))
 
 
 ;;(setq semantic-c-obey-conditional-section-parsing-flag nil)
@@ -119,6 +121,8 @@
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 (add-hook 'python-mode-hook 'lsp)
+(add-hook 'LaTeX-mode-hook 'lsp)
+ (setq company-minimum-prefix-length 2)
 
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024)
@@ -181,6 +185,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; for scheme
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'cmuscheme)
 (setq scheme-program-name "petite")
 (eval-after-load 'scheme                                                 
    '(define-key scheme-mode-map "\t" 'scheme-complete-or-indent)) 
@@ -250,6 +255,24 @@
 
 ;; for latex
 (require 'gscholar-bibtex)
+;(add-to-list 'load-path "/path/to/lsp-latex")
+(require 'lsp-latex)
+;; "texlab" must be located at a directory contained in `exec-path'.
+;; If you want to put "texlab" somewhere else,
+;; you can specify the path to "texlab" as follows:
+(setq lsp-latex-texlab-executable "/usr/bin/texlab")
+
+(with-eval-after-load "tex-mode"
+ (add-hook 'tex-mode-hook 'lsp)
+ (add-hook 'latex-mode-hook 'lsp)
+ (add-hook 'Latex-mode-hook 'lsp))
+
+;(defvar tex-electric-pairs '((?$ . ?$)) "Electric pairs for LaTeX-mode.")
+;(defun tex-add-electric-pairs ()
+;  (setq-local electric-pair-pairs (append electric-pair-pairs tex-electric-pairs))
+;  (setq-local electric-pair-text-pairs electric-pair-pairs))
+;(add-hook 'LaTeX-mode-hook 'tex-add-electric-pairs)
+
 (use-package tex-site
   :defer t
   :ensure auctex
@@ -259,22 +282,22 @@
             (setq TeX-parse-self t)
             (setq-default TeX-master nil)
             (setq TeX-command-force "LaTeX")
-            ;(setq TeX-clean-confirm t)
             (setq TeX-view-program-selection
                   '((output-dvi "PDF Tools")
                     (output-pdf "PDF Tools")))
             (add-hook 'LaTeX-mode-hook 'visual-line-mode)
             (add-hook 'LaTeX-mode-hook '(lambda () Tex-source-correlate-mode))
             (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)       
-            ;(add-hook 'LaTeX-mode-hook 'latex-preview-pane-mode)
             (add-hook 'LaTeX-mode-hook 'linum-mode)
             (add-hook 'LaTeX-mode-hook 'flyspell-mode)
             (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
             (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+            (add-hook 'LaTeX-mode-hook
+                      '(lambda ()
+                         (define-key LaTeX-mode-map (kbd "$") 'self-insert-command)))
             (add-hook 'pdf-view-mode-hook
                       (lambda ()
                         (pdf-view-fit-page-to-window) ))
-                                       ;(setq reftex-plug-into-AUCTeX t)
             (setq TeX-PDF-mode t)
             (latex-preview-pane-enable)
   )
