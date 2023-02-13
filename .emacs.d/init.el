@@ -302,3 +302,9 @@
             (latex-preview-pane-enable)
   )
 )
+
+
+;;;
+(require 'saveplace)
+(setq-default save-place t)
+
