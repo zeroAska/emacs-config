@@ -260,7 +260,7 @@
 ;; "texlab" must be located at a directory contained in `exec-path'.
 ;; If you want to put "texlab" somewhere else,
 ;; you can specify the path to "texlab" as follows:
-(setq lsp-latex-texlab-executable "/usr/bin/texlab")
+(setq lsp-latex-texlab-executable "texlab")
 
 (with-eval-after-load "tex-mode"
  (add-hook 'tex-mode-hook 'lsp)
