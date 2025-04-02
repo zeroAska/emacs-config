@@ -18,7 +18,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  helm-gtags modern-cpp-font-lock lsp-mode auctex latex-preview-pane pdf-tools gscholar-bibtex lsp-latex lsp-pyright ))
+(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme helm-etags-plus function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  helm-gtags modern-cpp-font-lock lsp-mode auctex latex-preview-pane pdf-tools gscholar-bibtex julia-vterm julia-repl gptel ))
  (unless (package-installed-p package)
    (package-install package)))
 
@@ -37,7 +37,7 @@
    '((company-clang-arguments "-I/home/rayzhang/unified_cvo/include/UnifiedCvo/" "-I/usr/include/c++/9/" "-I/usr/include/opencv2/" "-I/usr/include/ceres/" "-I/usr/include/eigen3/" "-I/usr/include/pcl-1.9/")))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(dockerfile-mode racket-mode pdf-tools lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode)))
+   '(julia-vterm julia-repl dockerfile-mode racket-mode pdf-tools lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode)))
 
 
 ;;(setq semantic-c-obey-conditional-section-parsing-flag nil)
@@ -134,11 +134,6 @@
   (require 'dap-cpptools)
   (yas-global-mode))
 
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp)))) 
 
 
 ;; highlight current light
@@ -185,7 +180,37 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; for julia
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'julia-mode)
+(use-package julia-mode
+  :ensure t)
+
+
+(defun my/julia-repl-send-cell() 
+  ;; "Send the current julia cell (delimited by ###) to the julia shell"
+  (interactive)
+  (save-excursion (setq cell-begin (if (re-search-backward "^###" nil t) (point) (point-min))))
+  (save-excursion (setq cell-end (if (re-search-forward "^###" nil t) (point) (point-max))))
+  (set-mark cell-begin)
+  (goto-char cell-end)
+  (julia-repl-send-region-or-line)
+  (next-line))
+
+;;(evil-add-command-properties #'my/julia-repl-send-cell :jump t)
+
+(use-package julia-repl
+  :ensure t
+  :hook (julia-mode . julia-repl-mode)
+
+  :init
+  (setenv "JULIA_NUM_THREADS" "8")
+
+  :config
+  ;; Set the terminal backend
+  (julia-repl-set-terminal-backend 'vterm)
+  
+  ;; Keybindings for quickly sending code to the REPL
+  (define-key julia-repl-mode-map (kbd "<f5>") 'my/julia-repl-send-cell)
+  (define-key julia-repl-mode-map (kbd "<f6>") 'julia-repl-send-line)
+  (define-key julia-repl-mode-map (kbd "<S-return>") 'julia-repl-send-buffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; for scheme
@@ -262,10 +287,11 @@
 (require 'gscholar-bibtex)
 ;(add-to-list 'load-path "/path/to/lsp-latex")
 (require 'lsp-latex)
+(setq TeX-engine 'xetex)
 ;; "texlab" must be located at a directory contained in `exec-path'.
 ;; If you want to put "texlab" somewhere else,
 ;; you can specify the path to "texlab" as follows:
-(setq lsp-latex-texlab-executable "texlab")
+(setq lsp-latex-texlab-executable "/usr/bin/texlab")
 
 (with-eval-after-load "tex-mode"
  (add-hook 'tex-mode-hook 'lsp)
@@ -285,13 +311,14 @@
   :config (progn
             (setq TeX-auto-save t)
             (setq TeX-parse-self t)
+            (setq  TeX-source-correlate-mode t)
             (setq-default TeX-master nil)
             (setq TeX-command-force "LaTeX")
             (setq TeX-view-program-selection
                   '((output-dvi "PDF Tools")
                     (output-pdf "PDF Tools")))
             (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-            (add-hook 'LaTeX-mode-hook '(lambda () Tex-source-correlate-mode))
+            ;(add-hook 'LaTeX-mode-hook '(lambda () Tex-source-correlate-mode))
             (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)       
             (add-hook 'LaTeX-mode-hook 'linum-mode)
             (add-hook 'LaTeX-mode-hook 'flyspell-mode)
@@ -313,3 +340,21 @@
 (require 'saveplace)
 (setq-default save-place t)
 
+
+;;; llm
+;; DeepSeek offers an OpenAI compatible API
+(require 'gptel)
+(gptel-make-openai "DeepSeek"       ;Any name you want
+  :host "api.deepseek.com"
+  :endpoint "/chat/completions"
+  :stream t
+  :key "sk-c87f76a358a74f06b40a93d206f99de4"               ;can be a function that returns the key
+  :models '(deepseek-chat deepseek-coder))
+
+;(use-package copilot
+;  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+;  :ensure t)
+;(add-hook 'prog-mode-hook 'copilot-mode)
+;(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+;(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+;(add-to-list 'copilot-major-mode-alist '("python" . "ruby"))
