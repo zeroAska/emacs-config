@@ -18,7 +18,7 @@
    (unless (package-installed-p package)
      (package-install package)))
 
-(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  helm-gtags modern-cpp-font-lock lsp-mode auctex latex-preview-pane pdf-tools gscholar-bibtex julia-vterm julia-repl gptel lsp-latex markdown-mode auto-header))
+(dolist (package '(ivy counsel-gtags semantic flylisp flycheck-inline flycheck-irony compact-docstrings company-shell dtrt-indent smartparens yasnippet hl-todo auto-highlight-symbol multi-term elpy stickyfunc-enhance monokai-theme monokai-alt-theme function-args flycheck-clang-analyzer paren-face cuda-mode cpputils-cmake company-irony-c-headers company-irony company-c-headers common-lisp-snippets cmake-project cmake-mode auto-correct auto-complete-c-headers ac-slime ac-clang ac-c-headers yaml-mode hl-anything cdb julia-mode counsel-etags  helm-gtags modern-cpp-font-lock lsp-mode auctex latex-preview-pane pdf-tools gscholar-bibtex julia-vterm julia-repl gptel lsp-latex markdown-mode auto-header multiple-cursors python-insert-docstring))
  (unless (package-installed-p package)
    (package-install package)))
 
@@ -31,27 +31,13 @@
  ;; If there is more than one, they won't work right.
  '(custom-enabled-themes '(monokai))
  '(custom-safe-themes
-   '("8dbbcb2b7ea7e7466ef575b60a92078359ac260c91fe908685b3983ab8e20e3f"
-     "78e6be576f4a526d212d5f9a8798e5706990216e9be10174e3f3b015b8662e27"
-     "d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279"
-     "a2cde79e4cc8dc9a03e7d9a42fabf8928720d420034b66aecc5b665bbf05d4e9"
-     "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9"
-     "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff"
-     default))
+   '("8dbbcb2b7ea7e7466ef575b60a92078359ac260c91fe908685b3983ab8e20e3f" "78e6be576f4a526d212d5f9a8798e5706990216e9be10174e3f3b015b8662e27" "d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279" "a2cde79e4cc8dc9a03e7d9a42fabf8928720d420034b66aecc5b665bbf05d4e9" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" default))
  '(helm-completion-style 'helm)
  '(ignored-local-variable-values
-   '((company-clang-arguments
-      "-I/home/rayzhang/unified_cvo/include/UnifiedCvo/"
-      "-I/usr/include/c++/9/" "-I/usr/include/opencv2/"
-      "-I/usr/include/ceres/" "-I/usr/include/eigen3/"
-      "-I/usr/include/pcl-1.9/")))
+   '((company-clang-arguments "-I/home/rayzhang/unified_cvo/include/UnifiedCvo/" "-I/usr/include/c++/9/" "-I/usr/include/opencv2/" "-I/usr/include/ceres/" "-I/usr/include/eigen3/" "-I/usr/include/pcl-1.9/")))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(auto-header avy company dap-mode dockerfile-mode flycheck helm-lsp
-                 helm-xref highlight-doxygen hydra julia-repl
-                 julia-shell julia-vterm lsp-mode lsp-treemacs
-                 markdown-preview-mode pdf-tools projectile
-                 racket-mode skeletor which-key yasnippet)))
+   '(python-insert-docstring lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode)))
 
 
 ;;(setq semantic-c-obey-conditional-section-parsing-flag nil)
@@ -148,6 +134,14 @@
   (require 'dap-cpptools)
   (yas-global-mode))
 
+
+;;; lsp python
+(use-package lsp-pyright
+  :ensure t
+  :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 
 ;; highlight current light
@@ -407,5 +401,42 @@
 
 
 ;; doxygen
-;; c
+;; for c lauguage
 (load "gendoxy.el")
+
+
+;; jupyter notebook
+
+
+;; delete backwards or forwards
+(global-set-key (kbd "C-c <backspace>") 'c-hungry-delete-backward)
+(global-set-key (kbd "C-c <deletechar>") 'c-hungry-delete-forward)
+
+
+;; muliple cursors
+(require 'multiple-cursors)
+(global-set-key (kbd "C-x C-i") 'mc/edit-lines)
+
+
+;; multi-line align
+;;;; int a = 1;
+;;;; short foo = 2;
+;;;; double blah = 4;
+;; is commonly aligned to:
+;;;; int    a    = 1;
+;;;; short  foo  = 2;
+;;;; double blah = 4;
+(global-set-key (kbd "C-x C-=") 'align)
+
+;; multi-line comment
+;;;; M-j
+
+
+;; python docstring
+(defun set-python-keybindings ()
+  (local-set-key (kbd "C-c i") 'python-insert-docstring-with-google-style-at-point)
+  )
+(add-hook 'python-mode-hook 'set-python-keybindings)
+
+;; rectangle selection
+(global-set-key (kbd "C-x C-m") 'rectangle-mark-mode)
